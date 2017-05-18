@@ -1,0 +1,118 @@
+lib = File.expand_path('../lib/', __FILE__)
+$:.unshift lib unless $:.include?(lib)
+require 'rake/testtask'
+require 'replace'
+
+Rake::TestTask.new do |t, args|
+  t.libs.push 'spec'
+  puts "ARGS: #{ARGV}"
+  filter = 'spec/**/*_spec.rb'
+  filter = "spec/**/*#{ARGV[1]}*_spec.rb" unless ARGV[1].nil?
+  unless ARGV[1].nil?
+    filter = "spec/**/#{ARGV[1]}.rb" if ARGV[1].include? '_spec'
+  end
+  puts "FILTER: #{filter}"
+  t.test_files = FileList[filter]
+  t.verbose = true
+end
+
+task :rename do
+  puts "Renaming to #{ARGV[1]}"
+
+  puts 'Replace the lib file with a new one'
+  puts '  Updating code'
+  original = File.read 'lib/replace.rb'
+  new = original.gsub 'Replace', ARGV[1].capitalize
+  puts "  Creating #{ARGV[1].downcase}.rb"
+  File.open("lib/#{ARGV[1].downcase}.rb", 'w') { |f| f << new }
+  puts '  Deleting lib/replace.rb'
+  File.delete 'lib/replace.rb'
+  puts "  Complete!\n"
+
+  puts 'Rename replace in the guard file'
+  original = File.read 'Guardfile'
+  new = original.gsub 'replace', ARGV[1].downcase
+  File.open('Guardfile', 'w') { |f| f << new }
+
+  puts 'Rename replace in the rake file'
+  original = File.read 'Rakefile'
+  new = original.gsub 'replace', ARGV[1].downcase
+  File.open('Rakefile', 'w') { |f| f << new }
+
+  puts 'Replace the spec file with a new one'
+  puts '  Updating spec'
+  original = File.read 'spec/replace_spec.rb'
+  new = original.gsub 'Replace', ARGV[1].capitalize
+  puts "  Creating #{ARGV[1].downcase}_spec.rb"
+  File.open("spec/#{ARGV[1].downcase}_spec.rb", 'w') { |f| f << new }
+  puts '  Deleting spec/replace_spec.rb'
+  File.delete 'spec/replace_spec.rb'
+  puts '  Updating spec_helper'
+  original = File.read 'spec/spec_helper.rb'
+  new = original.gsub 'replace', ARGV[1].downcase
+  File.open('spec/spec_helper.rb', 'w') { |f| f << new }
+  puts "  Complete!\n"
+
+  puts 'Replace the gemspec file with a new one'
+  puts '  Updating gemspec'
+  original = File.read 'replace.gemspec'
+  new = original.gsub 'Replace', ARGV[1].capitalize
+  new.gsub! 'replace', ARGV[1].downcase
+  puts "  Creating #{ARGV[1].downcase}.gemspec"
+  File.open("#{ARGV[1].downcase}.gemspec", 'w') { |f| f << new }
+  puts '  Deleting replace.gemspec'
+  File.delete 'replace.gemspec'
+  puts "  Complete!\n"
+
+  puts 'Project Rename Finished'
+end
+
+LEVELS = [:major, :minor, :patch]
+
+def version
+  @version ||= begin
+    v = `git describe --always --tags`
+    {}.tap do |h|
+      h[:major], h[:minor], h[:patch], h[:rev], h[:rev_hash] = v[1..-1].split(/[.-]/)
+    end
+  end
+end
+
+def increment(level)
+  v = version.dup
+  v[level] = v[level].to_i + 1
+
+  to_zero = LEVELS[LEVELS.index(level)+1..LEVELS.size]
+  to_zero.each{ |z| v[z] = 0 }
+
+  Rake::Task["version:set"].invoke(v[:major], v[:minor], v[:patch])
+end
+
+desc "Display version"
+task :version do
+  puts "Current version: #{`git describe --always --tags`}"
+end
+
+namespace :version do
+  LEVELS.each do |l|
+    desc "Increment #{l} version"
+    task l.to_sym do increment(l.to_sym) end
+  end
+
+  desc "Set specific major, minor and patch"
+  task :set, [:major, :minor, :patch] do |_, args|
+    new_version = "#{args[:major]}.#{args[:minor]}.#{args[:patch]}"
+    vfile = 'lib/replace.rb'
+    text = File.read vfile
+    old_version = text[/\d+\.\d+\.\d+/]
+
+    # Update version in the module
+    puts "Updating from v#{old_version} to v#{new_version}"
+    text = text.gsub( /\d+\.\d+\.\d+/, new_version )
+    File.open( vfile, 'w' ) { |f| f << text }
+
+    # Update the git repo
+    sh "git add lib/replace.rb && git commit -m \"Updated Version Num to #{new_version}\""
+    sh "git tag v#{new_version} && git push && git push --tags"
+  end
+end
