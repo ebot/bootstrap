@@ -1,5 +1,6 @@
 lib = File.expand_path('../lib/', __FILE__)
 $:.unshift lib unless $:.include?(lib)
+require 'fileutils'
 require 'rake/testtask'
 require 'replace'
 
@@ -63,6 +64,11 @@ task :rename do
   puts '  Deleting replace.gemspec'
   File.delete 'replace.gemspec'
   puts "  Complete!\n"
+
+  if File.exist? '.git'
+    puts "Deleting the git dir"
+    FileUtils.rm_rf '.git'
+  end
 
   puts 'Project Rename Finished'
 end
