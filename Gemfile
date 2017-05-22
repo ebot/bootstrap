@@ -4,6 +4,7 @@ group :development do
   gem 'guard'
   gem 'guard-minitest'
   gem 'guard-rubocop'
+  gem 'guard-rdoc'
   gem 'minitest-reporters'
   gem 'pry'
   gem 'pry-byebug'

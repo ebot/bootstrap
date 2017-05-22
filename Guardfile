@@ -7,6 +7,11 @@ group :red_green_refactor, halt_on_fail: true do
     watch(%r{^lib/replace/(.+)\.rb$}) { |m| "spec/index_#{m[1]}_spec.rb" }
   end
 
+  guard :rdoc, format: :sdoc, op: 'docs/rdoc', all_on_start: false do
+    watch(%r{^lib/(.+)\.rb$})
+    watch(%r{^lib/dm_core/(.+)\.rb$})
+  end
+
   guard :rubocop, all_on_start: false do
     watch(%r{.+\.rb$})
     watch(%r{(?:.+/)?\.rubocop\.yml$}) { |m| File.dirname(m[0]) }

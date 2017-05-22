@@ -17,6 +17,10 @@ Rake::TestTask.new do |t, args|
   t.verbose = true
 end
 
+RDoc::Task.new do |rdoc|
+  rdoc.rdoc_dir = 'docs/rdoc'
+end
+
 task :rename do
   puts "Renaming to #{ARGV[1]}"
 
