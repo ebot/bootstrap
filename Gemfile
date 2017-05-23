@@ -9,6 +9,7 @@ group :development do
   gem 'pry'
   gem 'pry-byebug'
   gem 'rubocop'
+  gem 'sdoc'
   gem 'wdm', '>= 0.1.0' if Gem.win_platform?
   gem 'win32console' if Gem.win_platform?
 end

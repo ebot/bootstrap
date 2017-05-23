@@ -2,6 +2,8 @@ lib = File.expand_path('../lib/', __FILE__)
 $:.unshift lib unless $:.include?(lib)
 require 'fileutils'
 require 'rake/testtask'
+require 'sdoc'
+require 'rdoc/task'
 require 'replace'
 
 Rake::TestTask.new do |t, args|
@@ -20,8 +22,10 @@ end
 RDoc::Task.new do |rdoc|
   rdoc.rdoc_dir = 'docs/rdoc'
   rdoc.generator = 'sdoc'
+  rdoc.template = 'sdoc'
   rdoc.main = 'README.md'
   rdoc.rdoc_files.include('README.md', 'lib/')
+  rdoc.title = 'Replace'
 end
 
 task :rename do
