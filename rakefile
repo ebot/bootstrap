@@ -20,9 +20,10 @@ Rake::TestTask.new do |t, args|
 end
 
 RDoc::Task.new do |rdoc|
-  rdoc.rdoc_dir = 'docs/rdoc'
+  FileUtils.rm_rf 'docs/rdoc'
+  rdoc.rdoc_dir  = 'docs/rdoc'
   rdoc.generator = 'sdoc'
-  rdoc.template = 'sdoc'
+  rdoc.template  = 'sdoc'
   rdoc.main = 'README.md'
   rdoc.rdoc_files.include('README.md', 'lib/')
   rdoc.title = 'Replace'
