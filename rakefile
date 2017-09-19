@@ -5,6 +5,7 @@ require 'rake/testtask'
 require 'sdoc'
 require 'rdoc/task'
 require 'replace'
+require 'yard'
 
 Rake::TestTask.new do |t, args|
   t.libs.push 'spec'
