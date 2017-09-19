@@ -7,7 +7,7 @@ group :red_green_refactor, halt_on_fail: true do
     watch(%r{^lib/replace/(.+)\.rb$}) { |m| "spec/index_#{m[1]}_spec.rb" }
   end
 
-  guard :rake, :task => 'rdoc' do
+  guard :rake, :task => 'yard' do
     watch(%r{^lib/(.+)\.rb$})
     watch(%r{^lib/replace/(.+)\.rb$})
   end
