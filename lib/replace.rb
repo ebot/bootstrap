@@ -1,6 +1,9 @@
 dir = File.dirname(__FILE__)
 $LOAD_PATH.unshift dir unless $LOAD_PATH.include?(dir)
 
+Dir["#{dir}/**/*.rb"].each do |file|
+  require file.gsub('.rb', '') unless file.include? 'replace.rb'
+end
 
 # Replace module functions and libraries
 module Replace
