@@ -1,0 +1,13 @@
+path = File.expand_path(File.dirname(__FILE__))
+require File.join(path, '..', 'lib', 'replace.rb')
+
+args = ARGV.dup
+ARGV.clear
+
+begin
+    command = args.shift.strip
+rescue
+    command = 'help'
+end
+
+Replace::CLI::Main.new(command, args)

@@ -48,6 +48,19 @@ task :rename do
   new = original.gsub 'replace', ARGV[1].downcase
   File.open('Rakefile', 'w') { |f| f << new }
 
+  puts 'Rename replace in the bin file'
+  original = File.read 'bin/replace'
+  FileUtils.rm 'bin/replace'
+  new = original.gsub 'replace', ARGV[1].downcase
+  new.gsub! 'Replace', ARGV[1].capitalize
+  File.open("bin/#{ARGV[1].downcase}", 'w') { |f| f << new }
+
+  puts 'Rename replace in the cli file'
+  original = File.read 'lib/cli/cli.rb'
+  new = original.gsub 'replace', ARGV[1].downcase
+  new.gsub! 'Replace', ARGV[1].capitalize
+  File.open("lib/cli/cli.rb", 'w') { |f| f << new }
+
   puts 'Replace the spec file with a new one'
   puts '  Updating spec'
   original = File.read 'spec/replace_spec.rb'
