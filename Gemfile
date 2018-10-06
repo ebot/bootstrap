@@ -8,8 +8,8 @@ group :development do
   gem 'minitest-reporters'
   gem 'pry'
   gem 'pry-byebug'
+  gem 'redcarpet'
   gem 'rubocop'
-  gem 'sdoc'
   gem 'wdm', '>= 0.1.0' if Gem.win_platform?
   gem 'win32console' if Gem.win_platform?
   gem 'yard'

@@ -2,8 +2,6 @@ lib = File.expand_path('../lib/', __FILE__)
 $:.unshift lib unless $:.include?(lib)
 require 'fileutils'
 require 'rake/testtask'
-require 'sdoc'
-require 'rdoc/task'
 require 'replace'
 require 'yard'
 
@@ -20,19 +18,10 @@ Rake::TestTask.new do |t, args|
   t.verbose = true
 end
 
-RDoc::Task.new do |rdoc|
-  FileUtils.rm_rf 'docs/rdoc'
-  rdoc.rdoc_dir  = 'docs/rdoc'
-  rdoc.generator = 'sdoc'
-  rdoc.template  = 'sdoc'
-  rdoc.main = 'README.md'
-  rdoc.rdoc_files.include('README.md', 'lib/')
-  rdoc.title = 'Replace'
-end
-
 YARD::Rake::YardocTask.new do |t|
   t.files   = ['lib/**/*.rb']
-  t.options = ['--output-dir=docs/ydoc']
+  t.options = ['--output-dir=docs/ydoc', '--markup=markdown',
+               '--markup-provider=redcarpet']
 end
 
 task :rename do
@@ -51,6 +40,7 @@ task :rename do
   puts 'Rename replace in the guard file'
   original = File.read 'Guardfile'
   new = original.gsub 'replace', ARGV[1].downcase
+  new.gsub! 'replace.txt', "#{ARGV[1].downcase}.rb"
   File.open('Guardfile', 'w') { |f| f << new }
 
   puts 'Rename replace in the rake file'
