@@ -4,7 +4,7 @@ module Replace
     ## Main module for the Mut command line interface
     class Main
       ## Create a new command line interface.
-      def initialize(command, args = nil)
+      def initialize(command, _args = nil)
         case command
         when 'about' then about
         when 'help'  then help
